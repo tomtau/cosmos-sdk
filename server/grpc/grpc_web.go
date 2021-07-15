@@ -8,6 +8,7 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc"
 
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/config"
 )
 
@@ -41,7 +42,7 @@ func StartGRPCWeb(grpcSrv *grpc.Server, config config.Config) (*http.Server, err
 	select {
 	case err := <-errCh:
 		return nil, err
-	case <-time.After(5 * time.Second): // assume server started successfully
+	case <-time.After(server.ServerStartTime): // assume server started successfully
 		return grpcWebSrv, nil
 	}
 }
