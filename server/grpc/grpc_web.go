@@ -34,7 +34,7 @@ func StartGRPCWeb(grpcSrv *grpc.Server, config config.Config) (*http.Server, err
 	errCh := make(chan error)
 	go func() {
 		if err := grpcWebSrv.ListenAndServe(); err != nil {
-			errCh <- fmt.Errorf("failed to serve: %w", err)
+			errCh <- fmt.Errorf("[grpc] failed to serve: %w", err)
 		}
 	}()
 
