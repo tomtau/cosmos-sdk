@@ -30,12 +30,14 @@ func StartGRPCWeb(grpcSrv *grpc.Server, config config.Config) (*http.Server, err
 		Addr:    config.GRPCWeb.Address,
 		Handler: http.HandlerFunc(handler),
 	}
+
 	errCh := make(chan error)
 	go func() {
 		if err := grpcWebSrv.ListenAndServe(); err != nil {
 			errCh <- fmt.Errorf("failed to serve: %w", err)
 		}
 	}()
+
 	select {
 	case err := <-errCh:
 		return nil, err
