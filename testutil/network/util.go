@@ -14,6 +14,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
 
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	servergrpc "github.com/cosmos/cosmos-sdk/server/grpc"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -90,7 +91,7 @@ func startInProcess(cfg Config, val *Validator) error {
 		select {
 		case err := <-errCh:
 			return err
-		case <-time.After(5 * time.Second): // assume server started successfully
+		case <-time.After(server.ServerStartTime): // assume server started successfully
 		}
 
 		val.api = apiSrv
@@ -117,7 +118,7 @@ func startInProcess(cfg Config, val *Validator) error {
 			select {
 			case err := <-errCh1:
 				return err
-			case <-time.After(5 * time.Second): // assume server started successfully
+			case <-time.After(server.ServerStartTime): // assume server started successfully
 			}
 
 		}

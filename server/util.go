@@ -36,6 +36,10 @@ import (
 // a command's Context.
 const ServerContextKey = sdk.ContextKey("server.context")
 
+// ServerStartTime defines the time duration that the server need to stay running after startup
+// for the startup be considered successful
+const ServerStartTime = 3 * time.Second
+
 // server context
 type Context struct {
 	Viper  *viper.Viper

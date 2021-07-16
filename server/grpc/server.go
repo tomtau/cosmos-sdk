@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/grpc/gogoreflection"
 	reflection "github.com/cosmos/cosmos-sdk/server/grpc/reflection/v2alpha1"
 	"github.com/cosmos/cosmos-sdk/server/types"
@@ -54,7 +55,7 @@ func StartGRPCServer(clientCtx client.Context, app types.Application, address st
 	select {
 	case err := <-errCh:
 		return nil, err
-	case <-time.After(5 * time.Second): // assume server started successfully
+	case <-time.After(server.ServerStartTime): // assume server started successfully
 		return grpcSrv, nil
 	}
 }
