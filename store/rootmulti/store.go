@@ -190,7 +190,20 @@ func (rs *Store) loadVersion(ver int64, upgrades *types.StoreUpgrades) error {
 	// load each Store (note this doesn't panic on unmounted keys now)
 	var newStores = make(map[types.StoreKey]types.CommitKVStore)
 
-	for key, storeParams := range rs.storesParams {
+	storesKeys := make([]types.StoreKey, len(rs.storesParams))
+
+	for key := range rs.storesParams {
+		storesKeys = append(storesKeys, key)
+	}
+	if upgrades != nil {
+		// deterministic iteration order for upgrades
+		sort.Slice(storesKeys, func(i, j int) bool {
+			return strings.Compare(storesKeys[i].Name(), storesKeys[j].Name()) == -1
+		})
+	}
+
+	for _, key := range storesKeys {
+		storeParams := rs.storesParams[key]
 		commitID := rs.getCommitID(infos, key.Name())
 
 		// If it has been added, set the initial version

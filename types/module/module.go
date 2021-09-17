@@ -389,7 +389,9 @@ func (m Manager) RunMigrations(ctx sdk.Context, cfg Configurator, fromVM Version
 	}
 
 	updatedVM := make(VersionMap)
-	for moduleName, module := range m.Modules {
+
+	for _, moduleName := range m.OrderInitGenesis {
+		module := m.Modules[moduleName]
 		fromVersion, exists := fromVM[moduleName]
 		toVersion := module.ConsensusVersion()
 
