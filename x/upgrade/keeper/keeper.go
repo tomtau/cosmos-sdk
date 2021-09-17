@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -84,7 +85,16 @@ func (k Keeper) SetModuleVersionMap(ctx sdk.Context, vm module.VersionMap) {
 	if len(vm) > 0 {
 		store := ctx.KVStore(k.storeKey)
 		versionStore := prefix.NewStore(store, []byte{types.VersionMapByte})
-		for modName, ver := range vm {
+		// for deterministic iteration order
+		sortedModNames := make([]string, 0, len(vm))
+
+		for key := range vm {
+			sortedModNames = append(sortedModNames, key)
+		}
+		sort.Strings(sortedModNames)
+
+		for _, modName := range sortedModNames {
+			ver := vm[modName]
 			nameBytes := []byte(modName)
 			verBytes := make([]byte, 8)
 			binary.BigEndian.PutUint64(verBytes, ver)
