@@ -36,6 +36,8 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"sort"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -389,8 +391,14 @@ func (m Manager) RunMigrations(ctx sdk.Context, cfg Configurator, fromVM Version
 	}
 
 	updatedVM := make(VersionMap)
+	// for deterministic iteration order
+	sortedModNames := make([]string, 0, len(m.Modules))
+	for key := range m.Modules {
+		sortedModNames = append(sortedModNames, key)
+	}
+	sort.Strings(sortedModNames)
 
-	for _, moduleName := range m.OrderInitGenesis {
+	for _, moduleName := range sortedModNames {
 		module := m.Modules[moduleName]
 		fromVersion, exists := fromVM[moduleName]
 		toVersion := module.ConsensusVersion()
