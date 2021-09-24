@@ -66,6 +66,9 @@ func (ci CommitInfo) ProofOp(storeName string) tmcrypto.ProofOp {
 }
 
 func (ci CommitInfo) CommitID() CommitID {
+	for _, storeInfo := range ci.StoreInfos {
+		fmt.Printf("%v: %X\n", storeInfo.Name, storeInfo.GetHash())
+	}
 	return CommitID{
 		Version: ci.Version,
 		Hash:    ci.Hash(),
