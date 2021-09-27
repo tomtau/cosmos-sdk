@@ -36,8 +36,6 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"sort"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -389,16 +387,18 @@ func (m Manager) RunMigrations(ctx sdk.Context, cfg Configurator, fromVM Version
 	if !ok {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "expected %T, got %T", configurator{}, cfg)
 	}
-
-	updatedVM := make(VersionMap)
-	// for deterministic iteration order
-	sortedModNames := make([]string, 0, len(m.Modules))
-	for key := range m.Modules {
-		sortedModNames = append(sortedModNames, key)
+	if len(m.Modules) != len(m.OrderInitGenesis) {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrAppConfig, "OrderInitGenesis should contain all modules")
 	}
-	sort.Strings(sortedModNames)
-
-	for _, moduleName := range sortedModNames {
+	for _, moduleName := range m.OrderInitGenesis {
+		_, moduleExists := m.Modules[moduleName]
+		if !moduleExists {
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrAppConfig, "Non-existing module %s in OrderInitGenesis", moduleName)
+		}
+	}
+	updatedVM := make(VersionMap)
+	// for deterministic iteration order, as module upgrade migrations depend on the execution order
+	for _, moduleName := range m.OrderInitGenesis {
 		module := m.Modules[moduleName]
 		fromVersion, exists := fromVM[moduleName]
 		toVersion := module.ConsensusVersion()
