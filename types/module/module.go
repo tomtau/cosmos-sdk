@@ -30,6 +30,7 @@ package module
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -390,6 +391,7 @@ func (m Manager) RunMigrations(ctx sdk.Context, cfg Configurator, fromVM Version
 
 	updatedVM := make(VersionMap)
 	for moduleName, module := range m.Modules {
+		ctx.Logger().Info(fmt.Sprintf("Migrating: %s", moduleName))
 		fromVersion, exists := fromVM[moduleName]
 		toVersion := module.ConsensusVersion()
 

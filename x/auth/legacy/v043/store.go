@@ -101,6 +101,9 @@ func migrateVestingAccounts(ctx sdk.Context, account types.AccountI, queryServer
 	for _, coin := range delegations {
 		balance = balance.Add(coin)
 	}
+	ctx.Logger().Info(fmt.Sprintf("addr %s", addr))
+	ctx.Logger().Info(fmt.Sprintf("balance %v", balance))
+	ctx.Logger().Info(fmt.Sprintf("delegations %v", delegations))
 
 	asVesting.TrackDelegation(ctx.BlockTime(), balance, delegations)
 
